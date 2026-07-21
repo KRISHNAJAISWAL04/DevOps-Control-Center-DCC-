@@ -15,4 +15,23 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+class ProjectCreate(BaseModel):
+    name: str
+    description: str
+    github_url: str
+
+
+class ProjectResponse(BaseModel):
+    id: int
+    name: str
+    description: str
+    github_url: str
+    owner_id: int
+
+    class Config:
+        from_attributes = True
         
