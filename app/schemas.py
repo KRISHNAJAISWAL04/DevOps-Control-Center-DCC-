@@ -35,3 +35,23 @@ class ProjectResponse(BaseModel):
     class Config:
         from_attributes = True
         
+class ServerCreate(BaseModel):
+    name: str
+    host: str
+    username: str
+    port: int = 22
+
+
+class ServerResponse(BaseModel):
+    id: int
+    name: str
+    host: str
+    username: str
+    port: int
+    owner_id: int
+
+    class Config:
+        from_attributes = True
+
+class CommandRequest(BaseModel):
+    command: str

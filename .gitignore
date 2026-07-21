@@ -42,3 +42,5 @@ Thumbs.db
 # Build
 dist/
 build/ 
+dcc-key
+dcc-key.pub

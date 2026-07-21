@@ -1,7 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-
+from app.services.ssh_service import execute_command
+from app.models.server import Server
 from app.database import Base, engine, get_db
 from app import crud, schemas, models
 from app.security import create_access_token, verify_token
@@ -106,8 +107,7 @@ def me(
         "email": current_user.email,
         "role": current_user.role
     }
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-
+ 
 
 
  
@@ -122,4 +122,76 @@ def create_project(
         project=project,
         owner_id=current_user.id
     )
-current_user: models.User = Depends(get_current_user)
+@app.post("/servers", response_model=schemas.ServerResponse)
+def create_server(
+    server: schemas.ServerCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    return crud.create_server(
+        db=db,
+        server=server,
+        owner_id=current_user.id
+    )
+
+
+@app.get("/servers", response_model=list[schemas.ServerResponse])
+def get_servers(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    return crud.get_servers(
+        db,
+        current_user.id
+    )
+
+
+@app.delete("/servers/{server_id}")
+def delete_server(
+    server_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    server = crud.delete_server(
+        db,
+        server_id,
+        current_user.id
+    )
+
+    if server is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Server not found"
+        )
+
+    return {
+        "message": "Server deleted successfully"
+    }
+@app.post("/servers/{server_id}/execute")
+def execute_on_server(
+    server_id: int,
+    request: schemas.CommandRequest,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+
+    server = crud.get_server_by_id(
+    db=db,
+    server_id=server_id,
+    owner_id=current_user.id
+)
+
+    if not server:
+        raise HTTPException(
+            status_code=404,
+            detail="Server not found"
+        )
+
+    result = execute_command(
+        host=server.host,
+        username=server.username,
+        key_path=r"C:\Users\krish\OneDrive\Desktop\agentic ai agents\intership\DevOps Control Center (DCC)\dcc-key",
+        command=request.command
+    )
+
+    return result
