@@ -1,12 +1,13 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from app.services.ssh_service import execute_command
 from app.models.server import Server
 from app.database import Base, engine, get_db
 from app import crud, schemas, models
 from app.security import create_access_token, verify_token
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from app.services.bootstrap import BOOTSTRAP_COMMAND
+from app.services.ssh_service import execute_command, deploy_container
  
 security = HTTPBearer()
 
@@ -195,3 +196,66 @@ def execute_on_server(
     )
 
     return result
+@app.post("/servers/{server_id}/deploy")
+def deploy(
+    server_id: int,
+    request: schemas.DeployRequest,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+
+    server = crud.get_server_by_id(
+        db=db,
+        server_id=server_id,
+        owner_id=current_user.id
+    )
+
+    if not server:
+        raise HTTPException(
+            status_code=404,
+            detail="Server not found"
+        )
+
+    command = deploy_container(
+        image=request.image,
+        container_name=request.container_name
+    )
+
+    result = execute_command(
+        host=server.host,
+        username=server.username,
+        key_path=r"C:\Users\krish\OneDrive\Desktop\agentic ai agents\intership\DevOps Control Center (DCC)\dcc-key",
+        command=command
+    )
+
+    return result
+
+
+@app.post("/servers/{server_id}/bootstrap")
+def bootstrap_server(
+    server_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+
+    server = crud.get_server_by_id(
+        db=db,
+        server_id=server_id,
+        owner_id=current_user.id
+    )
+
+    if not server:
+        raise HTTPException(
+            status_code=404,
+            detail="Server not found"
+        )
+
+    result = execute_command(
+        host=server.host,
+        username=server.username,
+        key_path=server.ssh_key_path,
+        command=BOOTSTRAP_COMMAND
+    )
+
+    return result
+ 

@@ -55,3 +55,7 @@ class ServerResponse(BaseModel):
 
 class CommandRequest(BaseModel):
     command: str
+
+class DeployRequest(BaseModel):
+    image: str
+    container_name: str
