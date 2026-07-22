@@ -44,3 +44,5 @@ dist/
 build/ 
 dcc-key
 dcc-key.pub
+terraform-key
+terraform-key.pub
