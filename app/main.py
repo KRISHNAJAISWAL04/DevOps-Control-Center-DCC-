@@ -22,7 +22,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 @app.get("/")
 def home():
     return {
-        "message": "DevOps Control Center API Running 🚀"
+        "message": "DevOps Control Center API Running ready 🚀"
     }
 
 
