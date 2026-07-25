@@ -36,5 +36,9 @@ services:
     ports:
       - "8000:8000"
 
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Krishna@123
+      POSTGRES_DB: dcc
 volumes:
   postgres_data:
