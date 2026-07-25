@@ -16,6 +16,12 @@ resource "aws_security_group" "my_security"{
     cidr_blocks= ["0.0.0.0/0"]
     protocol= "tcp"
 }
+    ingress {
+    from_port="8000"
+    to_port= "8000"
+    cidr_blocks= ["0.0.0.0/0"]
+    protocol= "tcp"
+}
     ingress{
         from_port = 22
         to_port = 22
@@ -55,6 +61,7 @@ resource "aws_instance" "my_instance" {
     instance_type = var.instance_type
     vpc_security_group_ids = [aws_security_group.my_security.id]
     key_name = aws_key_pair.my_key.key_name
+    
     tags = {
       Name = "DCC"
     }
