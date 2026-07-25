@@ -38,7 +38,7 @@ services:
 
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Krishna@123
+      POSTGRES_PASSWORD: Krishna123
       POSTGRES_DB: dcc
 volumes:
   postgres_data:
