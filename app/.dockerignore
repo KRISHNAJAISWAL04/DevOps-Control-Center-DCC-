@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+myenv/
+venv/
+.env
+.git
+terraform/
+ansible/
+dcc-key
+*.pem
