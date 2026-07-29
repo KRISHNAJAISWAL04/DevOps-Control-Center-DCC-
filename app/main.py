@@ -12,7 +12,7 @@ from app.services.ssh_service import execute_command, deploy_container
 security = HTTPBearer()
 
 app = FastAPI(
-    title="DevOps Control Center",
+    title="DevOps Control Center Ready",
     version="1.0.0"
 )
 
